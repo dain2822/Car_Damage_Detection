@@ -1,143 +1,113 @@
+import React, { useState, useEffect } from 'react';
+import { Button, Image, View, StyleSheet, Alert ,Text} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
-import React, { Component } from "react";
-import { Button, SafeAreaView, StyleSheet, Alert, Text } from "react-native";
+export default function App() {
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [predictionResult, setPredictionResult] = useState("");
 
-// Importing the installed libraries
-import * as FS from "expo-file-system";
-import * as ImagePicker from "expo-image-picker";
-
-export default class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      cameraRollPer: null,
-      disableButton: false,
+    // 권한 요청 함수
+    const requestPermission = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert(
+                "Permission Required",
+                "We need your permission to access your photo library."
+            );
+        }
     };
-  }
 
-  async componentDidMount() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    this.setState({
-      cameraRollPer: status === "granted",
-      disableButton: false,
-    });
-  }
+    // 권한 요청을 앱 시작 시 수행
+    useEffect(() => {
+        requestPermission();
+    }, []);
 
-  uriToBase64 = async (uri) => {
-    let base64 = await FS.readAsStringAsync(uri, {
-      encoding: FS.EncodingType.Base64,
-    });
-    return base64;
-  };
+    // 이미지 선택 함수
+    const pickImage = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                quality: 1,
+            });
 
-  pickFromGallery = async () => {
-    this.setState({ disableButton: true });
+            if (!result.canceled) {
+                setSelectedImage(result.assets[0].uri); // 선택한 이미지 URI 저장
+                setPredictionResult(""); // 새로운 이미지를 선택할 때 결과 초기화
+            }
+        } catch (error) {
+            console.error("Error picking image:", error);
+            Alert.alert("Error", "Something went wrong while accessing the gallery.");
+        }
+    };
+    
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // 이미지로만 제한
-      base64: true,
-    });
+    // 이미지 업로드 함수
+    const uploadImage = async () => {
+        if (!selectedImage) {
+            Alert.alert("No Image Selected", "Please select an image before uploading.");
+            return;
+        }
 
-    if (result.cancelled) {
-      this.setState({ disableButton: false });
-      return;
-    }
+        let formData = new FormData();
+        formData.append("image", {
+            uri: selectedImage,
+            type: "image/jpeg",
+            name: "photo.jpg",
+        });
 
-    if (result.type === "image") {
-      await this.toServer({
-        type: result.type,
-        base64: result.base64,
-        uri: result.uri,
-      });
-    }
+        try {
+            let response = await fetch("http://192.168.0.247:5000/upload", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-    this.setState({ disableButton: false });
-  };
+            let json = await response.json();
+            if (response.ok) {
+                Alert.alert("Upload Success", json.message);
+                setPredictionResult(json.result); // 예측 결과 저장
+            } else {
+                Alert.alert("Upload Failed", json.error || "Unknown error occurred");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            Alert.alert("Error", "Failed to upload image.");
+        }
+    };
 
-  openCamera = async () => {
-    this.setState({ disableButton: true });
-
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images, // 이미지로만 제한
-      base64: true,
-    });
-
-    if (result.cancelled) {
-      this.setState({ disableButton: false });
-      return;
-    }
-
-    if (result.type === "image") {
-      await this.toServer({
-        type: result.type,
-        base64: result.base64,
-        uri: result.uri,
-      });
-    }
-
-    this.setState({ disableButton: false });
-  };
-
-  toServer = async (mediaFile) => {
-    let type = mediaFile.type;
-    let schema = "http://";
-    let host = "192.168.1.6";
-    let route = "";
-    let port = "5000";
-    let url = "";
-    let content_type = "";
-    type === "image"
-      ? ((route = "/image"), (content_type = "image/jpeg"))
-      : ((route = "/video"), (content_type = "video/mp4"));
-    url = schema + host + ":" + port + route;
-
-    let response = await FS.uploadAsync(url, mediaFile.uri, {
-      headers: {
-        "content-type": content_type,
-      },
-      httpMethod: "POST",
-      uploadType: FS.FileSystemUploadType.BINARY_CONTENT,
-    });
-
-    console.log(response.headers);
-    console.log(response.body);
-  };
-
-  render() {
     return (
-      <SafeAreaView style={styles.container}>
-        {this.state.cameraRollPer ? (
-          <>
-            <Button
-              title="Pick From Gallery"
-              disabled={this.state.disableButton}
-              onPress={async () => {
-                await this.pickFromGallery();
-              }}
-            />
-            <Button
-              title="Open Camera"
-              disabled={this.state.disableButton}
-              onPress={async () => {
-                await this.openCamera();
-              }}
-            />
-          </>
-        ) : (
-          <Text>Camera Roll Permission Required!</Text>
-        )}
-      </SafeAreaView>
+      <View style={styles.container}>
+          <Button title="Choose an Image" onPress={pickImage} />
+          {selectedImage && (
+              <>
+                  <Image source={{ uri: selectedImage }} style={styles.image} />
+                  <Button title="Upload Image" onPress={uploadImage} />
+                  {predictionResult ? (
+                      <Text style={styles.resultText}>Prediction: {predictionResult}</Text>
+                  ) : null}
+              </>
+          )}
+        </View>
     );
-  }
 }
 
-// 클래스 외부에서 styles 객체 정의
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
+  image: {
+      width: 200,
+      height: 200,
+      marginVertical: 10,
+  },
+  resultText: {
+      marginTop: 20,
+      fontSize: 18,
+      fontWeight: 'bold',
   },
 });
