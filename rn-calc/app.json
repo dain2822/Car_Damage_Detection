@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "car_damage_app",
-    "slug": "car_damage_app",
+    "name": "rn-calc",
+    "slug": "rn-calc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,7 +18,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "permissions":["CAMERA"]
       }
     },
     "web": {
