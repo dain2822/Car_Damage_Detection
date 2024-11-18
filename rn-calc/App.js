@@ -80,7 +80,7 @@ export default function App() {
         });
 
         try {
-            let response = await fetch("http://172.16.12.228:5000/upload", {
+            let response = await fetch("http://192.168.0.247:5000/upload", {
                 method: "POST",
                 body: formData,
                 headers: {
@@ -102,56 +102,72 @@ export default function App() {
     };
 
     return (
-      <View style={styles.container}>
-          <View style={styles.buttonContainer}>
-              <Button title="Choose Images" onPress={pickImages} />
-              <Button title="Take a Photo" onPress={takePhoto} />
-          </View>
-          {selectedImages && selectedImages.length > 0 && (
-              <>
-                  <ScrollView horizontal={true} style={styles.imageContainer}>
-                      {selectedImages.map((image, index) => (
-                          <View key={index} style={styles.imageWrapper}>
-                              <Image source={{ uri: image }} style={styles.image} />
-                              {predictionResults[index] && (
-                                  <Text style={styles.resultText}>Prediction: {predictionResults[index]}</Text>
-                              )}
-                          </View>
-                      ))}
-                  </ScrollView>
-                  <Button title="Upload Images" onPress={uploadImages} />
-              </>
-          )}
+        <View style={styles.container}>
+            <View style={styles.imageContainer}>
+                {selectedImages && selectedImages.length > 0 ? (
+                    <ScrollView horizontal={true} contentContainerStyle={styles.scrollView}>
+                        {selectedImages.map((image, index) => (
+                            <View key={index} style={styles.imageWrapper}>
+                                <Image source={{ uri: image }} style={styles.image} />
+                                {predictionResults[index] && (
+                                    <Text style={styles.resultText}>Prediction: {predictionResults[index]}</Text>
+                                )}
+                            </View>
+                        ))}
+                    </ScrollView>
+                ) : (
+                    <Text style={styles.placeholderText}>No Images Selected</Text>
+                )}
+            </View>
+            <View style={styles.buttonContainer}>
+                <Button title="Choose Images" onPress={pickImages} />
+                <Button title="Take a Photo" onPress={takePhoto} />
+                <Button title="Upload Images" onPress={uploadImages} />
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-  container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-  },
-  buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      width: '80%',
-      marginVertical: 20,
-  },
-  imageContainer: {
-      marginVertical: 10,
-  },
-  imageWrapper: {
-      alignItems: 'center',
-      marginHorizontal: 10,
-  },
-  image: {
-      width: 200,
-      height: 200,
-  },
-  resultText: {
-      marginTop: 10,
-      fontSize: 16,
-      fontWeight: 'bold',
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 20,
+    },
+    imageContainer: {
+        flex: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+    },
+    scrollView: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    imageWrapper: {
+        alignItems: 'center',
+        marginHorizontal: 10,
+    },
+    image: {
+        width: 200,
+        height: 200,
+    },
+    resultText: {
+        marginTop: 10,
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    placeholderText: {
+        fontSize: 18,
+        color: 'gray',
+    },
+    buttonContainer: {
+        flex: 1,
+        width: '90%',
+        justifyContent: 'space-around',
+        marginBottom: 20,
+    },
 });
