@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 # 모델 로드
-model = tf.keras.models.load_model('C:/Users/pc/Desktop/project_car_damage/car_damage_detection_model.h5')  # 저장된 모델의 경로
+model = tf.keras.models.load_model('../car_damage_detection_model.h5')  # 저장된 모델의 경로
 
 def preprocess_image(image):
     image = image.resize((256, 256))  # 모델의 입력 크기에 맞게 조정
