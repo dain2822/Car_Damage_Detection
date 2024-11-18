@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Image, View, StyleSheet, Alert ,Text} from 'react-native';
+import { Button, Image, View, StyleSheet, Alert, Text, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as Camera from 'expo-camera';
 
 export default function App() {
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [predictionResult, setPredictionResult] = useState("");
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [predictionResults, setPredictionResults] = useState([]);
 
     // 권한 요청 함수
     const requestPermission = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
+        const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+        if (mediaLibraryStatus !== 'granted' || cameraStatus !== 'granted') {
             Alert.alert(
                 "Permission Required",
-                "We need your permission to access your photo library."
+                "We need your permission to access your photo library and camera."
             );
         }
     };
@@ -23,41 +25,62 @@ export default function App() {
     }, []);
 
     // 이미지 선택 함수
-    const pickImage = async () => {
+    const pickImages = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                quality: 1,
+                allowsMultipleSelection: true,
+            });
+
+            if (!result.canceled) {
+                setSelectedImages(result.assets.map(asset => asset.uri)); // 선택한 이미지 URI 배열로 저장
+                setPredictionResults([]); // 새로운 이미지를 선택할 때 결과 초기화
+            }
+        } catch (error) {
+            console.error("Error picking images:", error);
+            Alert.alert("Error", "Something went wrong while accessing the gallery.");
+        }
+    };
+
+    // 카메라로 사진 촬영 함수
+    const takePhoto = async () => {
+        try {
+            const result = await ImagePicker.launchCameraAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 quality: 1,
             });
 
             if (!result.canceled) {
-                setSelectedImage(result.assets[0].uri); // 선택한 이미지 URI 저장
-                setPredictionResult(""); // 새로운 이미지를 선택할 때 결과 초기화
+                setSelectedImages(prevImages => [...prevImages, result.assets[0].uri]); // 촬영한 이미지 추가
+                setPredictionResults([]); // 새로운 이미지를 선택할 때 결과 초기화
             }
         } catch (error) {
-            console.error("Error picking image:", error);
-            Alert.alert("Error", "Something went wrong while accessing the gallery.");
+            console.error("Error taking photo:", error);
+            Alert.alert("Error", "Something went wrong while accessing the camera.");
         }
     };
-    
 
     // 이미지 업로드 함수
-    const uploadImage = async () => {
-        if (!selectedImage) {
-            Alert.alert("No Image Selected", "Please select an image before uploading.");
+    const uploadImages = async () => {
+        if (!selectedImages || selectedImages.length === 0) {
+            Alert.alert("No Images Selected", "Please select images before uploading.");
             return;
         }
 
         let formData = new FormData();
-        formData.append("image", {
-            uri: selectedImage,
-            type: "image/jpeg",
-            name: "photo.jpg",
+        selectedImages.forEach((image, index) => {
+            formData.append("images", {
+                uri: image,
+                type: "image/jpeg",
+                name: `photo_${index}.jpg`,
+            });
         });
 
         try {
-            let response = await fetch("http://192.168.0.247:5000/upload", {
+            let response = await fetch("http://172.16.12.228:5000/upload", {
                 method: "POST",
                 body: formData,
                 headers: {
@@ -68,26 +91,35 @@ export default function App() {
             let json = await response.json();
             if (response.ok) {
                 Alert.alert("Upload Success", json.message);
-                setPredictionResult(json.result); // 예측 결과 저장
+                setPredictionResults(json.results); // 예측 결과 저장 (여러 이미지에 대한 결과)
             } else {
                 Alert.alert("Upload Failed", json.error || "Unknown error occurred");
             }
         } catch (error) {
             console.error("Error:", error);
-            Alert.alert("Error", "Failed to upload image.");
+            Alert.alert("Error", "Failed to upload images.");
         }
     };
 
     return (
       <View style={styles.container}>
-          <Button title="Choose an Image" onPress={pickImage} />
-          {selectedImage && (
+          <View style={styles.buttonContainer}>
+              <Button title="Choose Images" onPress={pickImages} />
+              <Button title="Take a Photo" onPress={takePhoto} />
+          </View>
+          {selectedImages && selectedImages.length > 0 && (
               <>
-                  <Image source={{ uri: selectedImage }} style={styles.image} />
-                  <Button title="Upload Image" onPress={uploadImage} />
-                  {predictionResult ? (
-                      <Text style={styles.resultText}>Prediction: {predictionResult}</Text>
-                  ) : null}
+                  <ScrollView horizontal={true} style={styles.imageContainer}>
+                      {selectedImages.map((image, index) => (
+                          <View key={index} style={styles.imageWrapper}>
+                              <Image source={{ uri: image }} style={styles.image} />
+                              {predictionResults[index] && (
+                                  <Text style={styles.resultText}>Prediction: {predictionResults[index]}</Text>
+                              )}
+                          </View>
+                      ))}
+                  </ScrollView>
+                  <Button title="Upload Images" onPress={uploadImages} />
               </>
           )}
         </View>
@@ -100,14 +132,26 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
   },
+  buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '80%',
+      marginVertical: 20,
+  },
+  imageContainer: {
+      marginVertical: 10,
+  },
+  imageWrapper: {
+      alignItems: 'center',
+      marginHorizontal: 10,
+  },
   image: {
       width: 200,
       height: 200,
-      marginVertical: 10,
   },
   resultText: {
-      marginTop: 20,
-      fontSize: 18,
+      marginTop: 10,
+      fontSize: 16,
       fontWeight: 'bold',
   },
 });
