@@ -86,7 +86,7 @@
 
 ### 프로젝트 팀
 - **강동우**: rkdehddn2007@gmail.com
-- **강민찬**: Why990928@gmail.com
+- **강민찬**: why990928@gmail.com
 - **심다인**: dain2822@gmail.com
 
 ---
