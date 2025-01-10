@@ -90,7 +90,29 @@
 - **심다인**: dain2822@gmail.com
 
 ---
-![슬라이드_1](이미지_URL)
+![슬라이드_1](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C1.PNG)
+![슬라이드 2](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C2.PNG)
+![슬라이드 3](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C3.PNG)
+![슬라이드 4](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C4.PNG)
+![슬라이드 5](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C5.PNG)
+![슬라이드 6](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C6.PNG)
+![슬라이드 7](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C7.PNG)
+![슬라이드 8](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C8.PNG)
+![슬라이드 9](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C9.PNG)
+![슬라이드 10](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C10.PNG)
+![슬라이드 11](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C11.PNG)
+![슬라이드 12](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C12.PNG)
+![슬라이드 13](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C13.PNG)
+![슬라이드 14](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C14.PNG)
+![슬라이드 15](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C15.PNG)
+![슬라이드 16](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C16.PNG)
+![슬라이드 17](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C17.PNG)
+![슬라이드 18](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C18.PNG)
+
+![DEMO 영상](https://github.com/dain2822/Car_Damage_Detection/blob/main/Car_damage_detection_ppt/car_damage_demo%20(1).mp4)
+
+
+
 
 
 
